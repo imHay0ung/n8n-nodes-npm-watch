@@ -1,0 +1,19 @@
+services:
+  verdaccio:
+    image: verdaccio/verdaccio:5
+    container_name: verdaccio
+    ports: ["4873:4873"]
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    ports: ["5678:5678"]
+    depends_on: [verdaccio]
+    environment:
+      - TZ=Asia/Seoul
+      - N8N_ENCRYPTION_KEY=dev_key_please_change
+      # package.json의 "name"과 동일해야 함 (예: @your-scope/n8n-nodes-npm-watch)
+      - N8N_COMMUNITY_PACKAGES='[{"name":"n8n-nodes-npm-watch","version":"0.1.8"}]'
+
+      # 커뮤니티 패키지 설치 시 사용할 npm 레지스트리(로컬 verdaccio)
+      - NPM_CONFIG_REGISTRY=http://verdaccio:4873
